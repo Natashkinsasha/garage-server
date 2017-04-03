@@ -25,7 +25,7 @@ describe('Test worker API', () => {
             .then((res) => {
                 expect(res).to.have.status(204);
                 done();
-            });
+            }).catch(err => (done(err)));
     });
 
 
@@ -36,7 +36,7 @@ describe('Test worker API', () => {
             .then((res) => {
                 expect(res).to.have.status(200);
                 done();
-            });
+            }).catch(err => (done(err)));
     });
 
     it('save worker', (done) => {
@@ -46,7 +46,7 @@ describe('Test worker API', () => {
             .then((res) => {
                 expect(res).to.have.status(201);
                 done();
-            });
+            }).catch(err => (done(err)));
     });
 
 
@@ -57,7 +57,7 @@ describe('Test worker API', () => {
             .then((res) => {
                 expect(res).to.have.status(204);
                 done();
-            });
+            }).catch(err => (done(err)));
     });
 
 
@@ -68,6 +68,6 @@ describe('Test worker API', () => {
             .then((res) => {
                 expect(res).to.have.status(200);
                 done();
-            });
+            }).catch(err => (done(err)));
     });
 });

@@ -2,21 +2,18 @@ import app from './app';
 import http from 'http';
 
 
-class HttpServer {
+function HttpServer() {
 
-    constructor(){
-        this.server = null;
-    }
+    this.server = null;
 
-    start = (port) => {
+    this.start = (port) => {
         this.server = http.createServer(app);
         this.server.listen(port);
-    }
+    };
 
-    finish = (cb) => {
+    this.finish = (cb) => {
         this.server.close(cb);
-    }
-
+    };
 }
 
 export default HttpServer;

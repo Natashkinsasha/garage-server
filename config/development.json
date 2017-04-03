@@ -1,0 +1,9 @@
+{
+  "mongoDb": {
+    "user": "admin",
+    "password": "admin",
+    "host": "@ds151070.mlab.com",
+    "port": "51070",
+    "db": "garage"
+  }
+}

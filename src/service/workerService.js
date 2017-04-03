@@ -1,36 +1,34 @@
-import _ from 'lodash';
-import shortId from 'shortid';
+function WorkerServer(db) {
 
-let workers = [];
+    this.db = db;
 
-export function save(worker) {
-    return Promise.resolve(workers.push({...worker, id: shortId.generate()}));
+    this.save = (worker) => {
+        return this.db.collection('workers').insertOne(worker);
+    };
+
+    this.update = (worker) => {
+        return this.db.collection('workers').updateOne({_id: worker.id}, worker);
+    };
+
+    this.remove = (...ids) => {
+        return this.db.collection('workers').deleteMany({_id: ids});
+    };
+
+    this.removeAll = () => {
+        return this.db.collection('workers').drop();
+    };
+
+    this.getById = (id) => {
+        return this.db.collection('workers').findOne({_id: id})
+    };
+
+    this.get = (page, number) => {
+        return Promise.resolve([]);
+    };
+
+    this.closeDB = () => {
+        return this.db.close();
+    }
 }
 
-export function update(worker) {
-    return Promise.resolve(_.remove(workers, {'id': worker.id})).then((deleteWorker)=>{
-        if (deleteWorker.length){
-            return workers.push(worker);
-        }
-        return false;
-    });
-}
-
-export function remove(...ids) {
-    return Promise.resolve(_.remove(workers, (worker) => {
-        return _.find(ids, worker.id);
-    }));
-}
-
-export function removeAll() {
-    return Promise.resolve(workers=[]);
-}
-
-
-export function get(page, number) {
-    return Promise.resolve({workers: _.slice(workers, page * number, number), length: workers.length});
-}
-
-export function getById(id) {
-    return Promise.resolve( _.findLast(workers, {'id': id}));
-}
+export default WorkerServer;

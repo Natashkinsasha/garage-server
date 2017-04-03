@@ -1,16 +1,16 @@
 module.exports = function (wallaby) {
+    process.env.NODE_ENV = "test";
     return {
         files: [
             'src/**/*.js',
         ],
 
         tests: [
-            'test/**/*Service.test.js'
+            'test/**/*Router.test.js'
         ],
 
         env: {
             type: 'node',
-            runner: 'node'
         },
 
         testFramework: 'mocha',
@@ -20,11 +20,15 @@ module.exports = function (wallaby) {
         },
 
         setup: function (w) {
+            require("babel-polyfill");
             const mocha = w.testFramework;
-            mocha.timeout(3000);
+            mocha.timeout(4000);
             require("babel-polyfill");
         },
 
+        workers: {
+            recycle: true
+        },
 
         debug: true
     };
