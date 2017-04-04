@@ -2,7 +2,7 @@ const chai = require('chai')
     , chaiHttp = require('chai-http');
 const mocha = require('mocha');
 
-import HttpServer from '../src/http-server';
+import HttpServer from '../../src/http-server';
 const httpServer = new HttpServer();
 
 chai.use(chaiHttp);

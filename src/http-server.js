@@ -1,8 +1,7 @@
-import app from './app';
 import http from 'http';
 
 
-function HttpServer() {
+function HttpServer(app) {
 
     this.server = null;
 

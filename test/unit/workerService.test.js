@@ -1,5 +1,5 @@
 const config = require('config');
-import WorkerService from '../src/service/workerService';
+import WorkerService from '../../src/service/WorkerService';
 const MongoClient = require('mongodb').MongoClient;
 const url = `mongodb://${config.get('mongoDb.user')}:${config.get('mongoDb.password')}${config.get('mongoDb.host')}:${config.get('mongoDb.port')}/${config.get('mongoDb.db')}`;
 
