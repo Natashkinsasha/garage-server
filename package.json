@@ -23,14 +23,16 @@
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
     "mocha": "^3.2.0",
+    "mockgo": "^1.1.6",
+    "mongo-mock": "^2.4.0",
     "morgan": "^1.8.1",
     "nodemon": "^1.11.0"
   },
   "scripts": {
     "build": "babel src -d dist",
-    "serve": "set NODE_ENV=production && node src/main.js",
-    "start": "set NODE_ENV=development && nodemon src/main.js --exec babel-node --presets es2015,stage-2",
-    "test": "set NODE_ENV=test && mocha --compilers js:babel-register"
+    "serve": "set NODE_ENV=production&& node src/main.js",
+    "start": "set NODE_ENV=development&& nodemon src/main.js --exec babel-node --presets es2015,stage-2",
+    "test": "set NODE_ENV=test&& mocha --compilers js:babel-register"
   },
   "author": "",
   "license": "ISC"

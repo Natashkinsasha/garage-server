@@ -1,11 +1,11 @@
-import Promise from 'bluebird';;
+import Promise from 'bluebird';
 const config = require('config');
-import HttpServer from './server/http-server';
-import WorkerService from './service/WorkerService';
-import WorkerRouter from './routers/WorkerRouter';
-import EquipmentService from './service/WorkerService';
-import EquipmentRouter from './routers/WorkerRouter';
-import app from './server/app';
+import HttpServer from '../../src/server/http-server';
+import WorkerService from '../../src/service/WorkerService';
+import WorkerRouter from '../../src/routers/WorkerRouter';
+import EquipmentService from '../../src/service/WorkerService';
+import EquipmentRouter from '../../src/routers/WorkerRouter';
+import app from '../../src/server/app';
 const httpServer = new HttpServer(app);
 const MongoClient =Promise.promisifyAll(require('mongodb')).MongoClient;
 const url = `mongodb://${config.get('mongoDb.user')}:${config.get('mongoDb.password')}${config.get('mongoDb.host')}:${config.get('mongoDb.port')}/${config.get('mongoDb.db')}`;
@@ -25,4 +25,3 @@ new Promise(function(resolve, reject) {
     console.log(err);
     httpServer.finish();
 });
-

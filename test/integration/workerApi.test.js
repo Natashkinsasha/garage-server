@@ -1,26 +1,17 @@
-const chai = require('chai')
-    , chaiHttp = require('chai-http');
-const mocha = require('mocha');
-
-import HttpServer from '../../src/http-server';
-const httpServer = new HttpServer();
-
+const env = require('./env');
+const chai = require('chai');
+const chaiHttp = require('chai-http');
 chai.use(chaiHttp);
 const expect = chai.expect;
+const config = require('config');
 
 
 describe('Test worker API', () => {
-    before(() => {
-        httpServer.start(3001);
-    });
 
-    after((done) => {
-        httpServer.finish(done);
-    });
-
+    const port = config.get('server.port');
 
     it('get worker by id', (done) => {
-        chai.request('http://localhost:3001')
+        chai.request(`http://localhost:${port}`)
             .get('/worker/1')
             .then((res) => {
                 expect(res).to.have.status(204);
@@ -30,7 +21,7 @@ describe('Test worker API', () => {
 
 
     it('get workers by parameters', (done) => {
-        chai.request('http://localhost:3001')
+        chai.request(`http://localhost:${port}`)
             .get('/worker')
             .query({page: 1, number: 10})
             .then((res) => {
@@ -40,7 +31,7 @@ describe('Test worker API', () => {
     });
 
     it('save worker', (done) => {
-        chai.request('http://localhost:3001')
+        chai.request(`http://localhost:${port}`)
             .post('/worker')
             .send({firstName: 'Pasha', secondName: 'Rydak'})
             .then((res) => {
@@ -51,7 +42,7 @@ describe('Test worker API', () => {
 
 
     it('update worker', (done) => {
-        chai.request('http://localhost:3001')
+        chai.request(`http://localhost:${port}`)
             .put('/worker')
             .send({id: 2, firstName: 'Peta', secondName: 'Parker'})
             .then((res) => {
@@ -62,7 +53,7 @@ describe('Test worker API', () => {
 
 
     it('delete workers', (done) => {
-        chai.request('http://localhost:3001')
+        chai.request(`http://localhost:${port}`)
             .delete('/worker')
             .query({ids: [1, 2]})
             .then((res) => {

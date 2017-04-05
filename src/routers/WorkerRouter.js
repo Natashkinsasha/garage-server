@@ -15,8 +15,8 @@ module.exports = (workerService) => {
     }).post('/', (req, res, next) => {
         return workerService.save(req.body).then(() => (res.status(201).end())).catch(next);
     }).put('/', (req, res, next) => {
-        return workerService.update(req.body).then((idUpdated) => {
-            if (idUpdated) {
+        return workerService.update(req.body).then((UpdateCommandResult) => {
+            if (UpdateCommandResult) {
                 return res.status(200).end();
             }
             return res.status(204).end();

@@ -1,5 +1,3 @@
-
-
 function WorkerServer(db) {
 
     this.db = db;
@@ -28,9 +26,6 @@ function WorkerServer(db) {
         return Promise.resolve([]);
     };
 
-    this.closeDB = () => {
-        return this.db.close();
-    }
 }
 
 export default WorkerServer;

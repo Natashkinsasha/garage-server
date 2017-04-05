@@ -1,4 +1,7 @@
 {
+  "server": {
+    "port": 3001
+  },
   "mongoDb": {
     "user": "admin",
     "password": "admin",
