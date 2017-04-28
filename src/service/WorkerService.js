@@ -1,31 +1,33 @@
-function WorkerServer(db) {
+import Promise from 'bluebird';
 
-    this.db = db;
+function WorkerServer(Worker) {
+
 
     this.save = (worker) => {
-        return this.db.collection('workers').insertOne(worker);
+        return new Worker(worker).save();
     };
 
     this.update = (worker) => {
-        return this.db.collection('workers').updateOne({_id: worker.id}, worker);
+        return Worker.findByIdAndUpdate(worker.id, worker, {new: true});
     };
 
     this.remove = (...ids) => {
-        return this.db.collection('workers').deleteMany({_id: ids});
+        return Promise.map(ids, (id) => {
+            return Worker.findByIdAndRemove(id);
+        });
     };
 
     this.removeAll = () => {
-        return this.db.collection('workers').drop();
+        return Worker.remove({});
     };
 
     this.getById = (id) => {
-        return this.db.collection('workers').findOne({_id: id})
+        return Worker.findById(id);
     };
 
     this.get = (page, number) => {
-        return Promise.resolve([]);
+        return Worker.paginate({}, {offset: page * number, limit: number})
     };
-
 }
 
 export default WorkerServer;

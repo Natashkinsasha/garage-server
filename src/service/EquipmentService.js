@@ -1,29 +1,31 @@
-function EquipmentServer(db) {
+import Promise from 'bluebird';
 
-    this.db = db;
+function EquipmentServer(Equipment) {
 
-    this.save = (worker) => {
-        return this.db.collection('equipments').insertOne(worker);
+    this.save = (equipment) => {
+        return new Equipment(equipment).save();
     };
 
-    this.update = (worker) => {
-        return this.db.collection('equipments').updateOne({_id: worker.id}, worker);
+    this.update = (equipment) => {
+        return Equipment.findByIdAndUpdate(equipment.id, equipment, {new: true});
     };
 
     this.remove = (...ids) => {
-        return this.db.collection('equipments').deleteMany({_id: ids});
+        return Promise.map(ids, (id) => {
+            return Equipment.findByIdAndRemove(id);
+        });
     };
 
     this.removeAll = () => {
-        return this.db.collection('equipments').drop();
+        return Equipment.remove({});
     };
 
     this.getById = (id) => {
-        return this.db.collection('equipments').findOne({_id: id})
+        return Equipment.findById(id);
     };
 
     this.get = (page, number) => {
-        return Promise.resolve([]);
+        return Equipment.paginate({}, {offset: page * number, limit: number})
     };
 
 }
