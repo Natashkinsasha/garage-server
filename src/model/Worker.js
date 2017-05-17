@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import mongoosePaginate from 'mongoose-paginate';
-var renameIdPlugin = require('mongoose-rename-id');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
@@ -16,8 +15,6 @@ const Worker = new Schema({
     licenseNumber: {type: String},
     class: {type: String},
 });
-
-Worker.plugin(renameIdPlugin({newIdName: 'id'}));
 
 Worker.plugin(mongoosePaginate);
 

@@ -13,7 +13,9 @@
   "session": {
     "name": "garage-session",
     "secret": "garage",
-    "keys": ["sid"],
+    "keys": [
+      "sid"
+    ],
     "cookie": {
       "httpOnly": true,
       "maxAge": null,

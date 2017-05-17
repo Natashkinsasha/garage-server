@@ -1,11 +1,16 @@
 const config = require('config');
 import Promise from 'bluebird';
+import R from 'ramda'
 import WorkerService from '../../src/service/WorkerService';
 import Worker from '../../src/model/Worker';
 import mongoose from 'mongoose';
 import {Mockgoose} from 'mockgoose';
+import chai from 'chai';
 let mockgoose = new Mockgoose(mongoose);
-const expect = require('chai').expect;
+const expect = chai.expect;
+chai.should();
+chai.use(require('chai-things'));
+mongoose.Promise = Promise;
 
 describe('WorkerService', () => {
     let workerService;
@@ -35,6 +40,7 @@ describe('WorkerService', () => {
                 })
                 .then((worker) => {
                     expect(worker).to.not.be.null;
+                    expect(worker.id).to.be.a('string');
                     done();
                 }).catch(err => (done(err)));
         });
@@ -42,27 +48,70 @@ describe('WorkerService', () => {
 
     describe('#get', () => {
         it('should return list of workers with given page, given size', (done) => {
-            Promise.all([
-                workerService.save({firstName: 'Petia', secondName: 'Parker'}),
-                workerService.save({firstName: 'Alex', secondName: 'Natashkin'}),
-                workerService.save({firstName: 'Pasha', secondName: 'Rydak'})
-            ])
+            Promise
+                .all([
+                    workerService.save({firstName: 'Petia', secondName: 'Parker'}),
+                    workerService.save({firstName: 'Alex', secondName: 'Natashkin'}),
+                    workerService.save({firstName: 'Pasha', secondName: 'Rydak'})
+                ])
                 .then(() => {
-                    return workerService.get(1, 2)
+                    return workerService.get({page: 1, limit: 3})
                 })
-                .then((workersPage) => {
-                    expect(workersPage.docs[0]).to.have.property('firstName', 'Pasha');
-                    expect(workersPage.docs[0]).to.have.property('secondName', 'Rydak');
+                .then((result) => {
+                    expect(result).to.have.property('total', 3);
+                    expect(result).to.have.property('limit', 3);
+                    expect(result).to.have.property('page', 1);
+                    expect(result).to.have.property('pages', 1);
+                    expect(result).to.have.property('docs');
+                    expect(result.docs).to.have.lengthOf(3);
                     done();
-                }).catch(err => (done(err)));
+                })
+                .catch(err => (done(err)));
+        });
+
+        it('should return list of sorted by firstName workers with given page, given size', (done) => {
+            Promise
+                .all([
+                    workerService.save({firstName: 'Petia', secondName: 'Parker'}),
+                    workerService.save({firstName: 'Alex', secondName: 'Natashkin'}),
+                    workerService.save({firstName: 'Pasha', secondName: 'Rydak'})
+                ])
+                .then(() => {
+                    return workerService.get({page: 1, limit: 3, sort: {'firstName': 'descending'}})
+                })
+                .then((result) => {
+                    expect(result.docs).to.have.lengthOf(3);
+                    done();
+                })
+                .catch(err => (done(err)));
+        });
+
+        it('should return list of sorted by firstName workers with given page, given size', (done) => {
+            Promise
+                .all([
+                    workerService.save({firstName: 'Petia', secondName: 'Parker'}),
+                    workerService.save({firstName: 'Alex', secondName: 'Natashkin'}),
+                    workerService.save({firstName: 'Pasha', secondName: 'Rydak'})
+                ])
+                .then(() => {
+                    return workerService.get({page: 1, limit: 3, sort: {'test': 'descending'}})
+                })
+                .then((result) => {
+                    expect(result.docs).to.have.lengthOf(3);
+                    done();
+                })
+                .catch(err => (done(err)));
         });
     });
 
     describe('#removeAll', () => {
         it('should delete all workers', (done) => {
-            workerService.removeAll().then(() => {
-                done();
-            }).catch(err => (done(err)));
+            workerService
+                .removeAll()
+                .then(() => {
+                    done();
+                })
+                .catch(err => (done(err)));
         });
     });
 
@@ -71,6 +120,8 @@ describe('WorkerService', () => {
             workerService
                 .save({firstName: 'Petia', secondName: 'Parker'})
                 .then((worker) => {
+                    console.log(typeof worker.id)
+                    expect(worker.id).to.be.a('string');
                     expect(worker).to.have.property('firstName', 'Petia');
                     expect(worker).to.have.property('secondName', 'Parker');
                     done();
@@ -93,17 +144,48 @@ describe('WorkerService', () => {
         });
     });
 
+    describe('#findByPositions', () => {
+        it('should find worker by positions', (done) => {
+            Promise
+                .all([
+                    workerService.save({
+                        firstName: 'Petia',
+                        secondName: 'Parker',
+                        positions: ['superman', 'photographer']
+                    }),
+                    workerService.save({firstName: 'Alex', secondName: 'Natashkin', positions: ['programmer']})
+                ])
+                .tap(console.log)
+                .spread((petia, alex) => {
+                    return Promise
+                        .all([
+                            workerService.findByPositions('superman'),
+                            workerService.findByPositions('programmer', 'student'),
+                        ])
+                        .spread((supermans, programmersORstudents) => {
+                            supermans.should.include.something.that.deep.equals(petia);
+                            programmersORstudents.should.include.something.that.deep.equals(alex);
+                            done();
+                        })
+
+                })
+
+                .catch(err => (done(err)));
+        });
+    });
+
     describe('#remove', () => {
         it('should remove worker by id', (done) => {
-            Promise.all([
-                workerService.save({firstName: 'Petia', secondName: 'Parker'}),
-                workerService.save({firstName: 'Alex', secondName: 'Natashkin'})
-            ])
-                .map((worker) => (worker.id))
+            Promise
+                .all([
+                    workerService.save({firstName: 'Petia', secondName: 'Parker'}),
+                    workerService.save({firstName: 'Alex', secondName: 'Natashkin'})
+                ])
+                .then(R.pluck('id'))
                 .spread((petiaId, alexId) => {
                     return workerService.remove(petiaId, alexId)
                 })
-                .map((worker) => (worker.id))
+                .then(R.pluck('id'))
                 .spread((petiaId, alexId) => {
                     return Promise.all([
                         workerService.getById(petiaId),
@@ -118,6 +200,5 @@ describe('WorkerService', () => {
                 .catch(err => (done(err)));
         });
     });
-})
-;
+});
 
