@@ -6,7 +6,7 @@ module.exports = (workerService) => {
     return workerRouter
         .get('/find/positions', (req, res, next) => {
             return workerService
-                .findByPositions(req.body.positions)
+                .findByPositions(...req.query.positions)
                 .then((workers) => {
                     return res.status(200).json({workers});
                 })
@@ -100,7 +100,7 @@ module.exports = (workerService) => {
             }).catch(next);
         })
         .delete('/', (req, res, next) => {
-            req.checkBody({
+            req.checkQuery({
                 'ids': {
                     notEmpty: {
                         errorMessage: 'Id array is empty'
@@ -115,7 +115,7 @@ module.exports = (workerService) => {
                 .then((result) => {
                     if (result.isEmpty()) {
                         return workerService
-                            .remove(req.body.ids)
+                            .remove(...req.query.ids)
                             .then(() => (res.status(200).end()))
                     }
                     return res.status(400).json(result.mapped());

@@ -155,19 +155,17 @@ describe('WorkerService', () => {
                     }),
                     workerService.save({firstName: 'Alex', secondName: 'Natashkin', positions: ['programmer']})
                 ])
-                .tap(console.log)
                 .spread((petia, alex) => {
                     return Promise
                         .all([
                             workerService.findByPositions('superman'),
                             workerService.findByPositions('programmer', 'student'),
-                        ])
+                        ]).tap(console.log)
                         .spread((supermans, programmersORstudents) => {
                             supermans.should.include.something.that.deep.equals(petia);
                             programmersORstudents.should.include.something.that.deep.equals(alex);
                             done();
                         })
-
                 })
 
                 .catch(err => (done(err)));
@@ -200,5 +198,6 @@ describe('WorkerService', () => {
                 .catch(err => (done(err)));
         });
     });
+
 });
 
