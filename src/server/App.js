@@ -1,44 +1,29 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import cookieSession from 'cookie-session';
 import config from 'config';
-import passport from 'passport';
-import expressValidator from 'express-validator';
-import reduce from 'lodash/reduce';
+
+import errorHandler from '../middleware/errorHandler';
+import logger from '../middleware/logger';
+import validator from '../middleware/validator';
+
 const LocalStrategy = require('passport-local').Strategy;
 const objectID = require('mongodb').ObjectID;
 
 
-export default ({workerRouter, equipmentRouter}) => {
+export default ({userRouter, workerRouter, equipmentRouter, passport}) => {
     const app = express();
-    app.use(morgan('combined'));
+    app.use(logger());
     app.use(cookieParser());
-    //app.use(cookieSession({...config.get('session')}));
+    app.use(cookieSession({...config.get('session')}));
     app.use(bodyParser.json());
     app.use(passport.initialize());
     app.use(passport.session());
-    app.use(expressValidator({
-        customValidators: {
-            isObjectId: (value) => {
-                return objectID.isValid(value);
-            },
-            isArrayObjectId: (value) => {
-                return reduce(value, (result, iteam) => {
-                    return result && objectID.isValid(iteam)
-                }, true);
-            },
-            isDirection: (value) => {
-                return value === 'ascending' || value === 'descending';
-            }
-        }
-    }));
-    workerRouter && app.use('/api/workers', workerRouter);
-    equipmentRouter && app.use('/api/equipments', equipmentRouter);
-    app.use((err, req, res, next) => {
-        console.log(err)
-        res.status(500).send('Server error');
-    });
+    app.use(validator());
+    app.use(`/${config.get('version')}/api/workers`, workerRouter);
+    app.use(`/${config.get('version')}/api/equipments`, equipmentRouter);
+    app.use(`/${config.get('version')}/api`, userRouter);
+    app.use(errorHandler());
     return app;
 };

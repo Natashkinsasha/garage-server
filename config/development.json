@@ -1,22 +1,3 @@
 {
-  "server": {
-    "port": 3001
-  },
-  "mongoDb": {
-    "user": "admin",
-    "password": "admin",
-    "host": "@ds151070.mlab.com",
-    "port": "51070",
-    "db": "garage",
-    "session": {
-      "name": "garage-session",
-      "secret": "garage",
-      "keys": ["sid"],
-      "cookie": {
-        "httpOnly": true,
-        "maxAge": null,
-        "path": "/"
-      }
-    }
-  }
+  "ENV":"development"
 }

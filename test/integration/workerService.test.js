@@ -1,34 +1,43 @@
-const config = require('config');
+import config from 'config';
 import Promise from 'bluebird';
 import R from 'ramda'
-import WorkerService from '../../src/service/WorkerService';
-import Worker from '../../src/model/Worker';
 import mongoose from 'mongoose';
 import {Mockgoose} from 'mockgoose';
 import chai from 'chai';
-let mockgoose = new Mockgoose(mongoose);
+import chaiThings from 'chai-things';
+import dirtyChai from 'dirty-chai';
+
+import WorkerService from '../../src/service/WorkerService';
+import Worker from '../../src/model/Worker';
+
 const expect = chai.expect;
 chai.should();
-chai.use(require('chai-things'));
+chai.use(chaiThings);
+chai.use(dirtyChai);
 mongoose.Promise = Promise;
 
 describe('WorkerService', () => {
     let workerService;
+    let mockgoose;
 
     before((done) => {
-        mockgoose.prepareStorage().then(() => {
-            mongoose.connect('mongodb://example.com/TestingDB', (err) => {
+        mockgoose = new Mockgoose(mongoose);
+        mockgoose
+            .prepareStorage()
+            .then(() => (mongoose.connect('mongodb://example.com/TestingDB')))
+            .then(() => {
                 workerService = new WorkerService(Worker);
-                done(err);
-            });
-        }).catch(err => (done(err)));
+                done();
+            })
+            .catch(done);
     });
 
 
     afterEach((done) => {
-        mockgoose.helper.reset().then(() => {
-            done()
-        });
+        mockgoose.helper
+            .reset()
+            .then(done)
+            .catch(done);
     });
 
     describe('#getById', () => {
@@ -39,10 +48,11 @@ describe('WorkerService', () => {
                     return workerService.getById(worker.id);
                 })
                 .then((worker) => {
-                    expect(worker).to.not.be.null;
+                    expect(worker).to.not.be.null();
                     expect(worker.id).to.be.a('string');
                     done();
-                }).catch(err => (done(err)));
+                })
+                .catch(done);
         });
     });
 
@@ -66,7 +76,7 @@ describe('WorkerService', () => {
                     expect(result.docs).to.have.lengthOf(3);
                     done();
                 })
-                .catch(err => (done(err)));
+                .catch(done);
         });
 
         it('should return list of sorted by firstName workers with given page, given size', (done) => {
@@ -83,7 +93,7 @@ describe('WorkerService', () => {
                     expect(result.docs).to.have.lengthOf(3);
                     done();
                 })
-                .catch(err => (done(err)));
+                .catch(done);
         });
 
         it('should return list of sorted by firstName workers with given page, given size', (done) => {
@@ -100,7 +110,7 @@ describe('WorkerService', () => {
                     expect(result.docs).to.have.lengthOf(3);
                     done();
                 })
-                .catch(err => (done(err)));
+                .catch(done);
         });
     });
 
@@ -111,7 +121,7 @@ describe('WorkerService', () => {
                 .then(() => {
                     done();
                 })
-                .catch(err => (done(err)));
+                .catch(done);
         });
     });
 
@@ -120,13 +130,12 @@ describe('WorkerService', () => {
             workerService
                 .save({firstName: 'Petia', secondName: 'Parker'})
                 .then((worker) => {
-                    console.log(typeof worker.id)
                     expect(worker.id).to.be.a('string');
                     expect(worker).to.have.property('firstName', 'Petia');
                     expect(worker).to.have.property('secondName', 'Parker');
                     done();
                 })
-                .catch(err => (done(err)));
+                .catch(done);
         });
     });
 
@@ -140,7 +149,8 @@ describe('WorkerService', () => {
                 .then((worker) => {
                     expect(worker).to.have.property('firstName', 'Alex');
                     done();
-                }).catch(err => (done(err)));
+                })
+                .catch(done);
         });
     });
 
@@ -160,15 +170,14 @@ describe('WorkerService', () => {
                         .all([
                             workerService.findByPositions('superman'),
                             workerService.findByPositions('programmer', 'student'),
-                        ]).tap(console.log)
+                        ])
                         .spread((supermans, programmersORstudents) => {
                             supermans.should.include.something.that.deep.equals(petia);
                             programmersORstudents.should.include.something.that.deep.equals(alex);
                             done();
                         })
                 })
-
-                .catch(err => (done(err)));
+                .catch(done);
         });
     });
 
@@ -191,11 +200,11 @@ describe('WorkerService', () => {
                     ]);
                 })
                 .spread((petia, alex) => {
-                    expect(petia).to.be.null;
-                    expect(alex).to.be.null;
+                    expect(petia).to.be.null();
+                    expect(alex).to.be.null();
                     done();
                 })
-                .catch(err => (done(err)));
+                .catch(done);
         });
     });
 

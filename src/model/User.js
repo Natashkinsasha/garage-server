@@ -1,3 +1,20 @@
-/**
- * Created by User on 28.04.2017.
- */
+import mongoose from 'mongoose';
+const Schema = mongoose.Schema;
+
+const UserSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        unique: true,
+        required: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    roles: {
+        type: Array,
+    }
+});
+export default mongoose.model('user', UserSchema);
+
+

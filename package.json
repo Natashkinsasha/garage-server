@@ -11,19 +11,16 @@
     "cookie-session": "^2.0.0-beta.1",
     "express": "^4.15.2",
     "express-validator": "^3.2.0",
-    "lodash": "^4.17.4",
-    "meanie-mongoose-to-json": "^1.2.1",
-    "mongodb": "^2.2.25",
+    "express-winston": "^2.4.0",
     "mongoose": "^4.9.6",
-    "mongoose-lean-id": "0.0.1",
     "mongoose-paginate": "^5.0.3",
-    "moongoose": "0.0.5",
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
     "passport-local": "^1.0.0",
     "passport-vkontakte": "^0.3.2",
     "ramda": "^0.23.0",
-    "shortid": "^2.2.8"
+    "shortid": "^2.2.8",
+    "winston": "^2.3.1"
   },
   "devDependencies": {
     "babel-cli": "^6.24.0",
@@ -36,18 +33,17 @@
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
     "chai-things": "^0.2.0",
+    "dirty-chai": "^1.2.2",
+    "gulp": "^3.9.1",
+    "gulp-mocha": "^4.3.1",
     "mocha": "^3.2.0",
-    "mockgo": "^1.1.6",
-    "mongo-mock": "^2.4.0",
-    "mongoose-rename-id": "^1.0.2",
-    "morgan": "^1.8.1",
-    "nodemon": "^1.11.0"
+    "mockgoose": "^7.3.3",
+    "nodemon": "^1.11.0",
+    "query-string": "^4.3.4"
   },
   "scripts": {
-    "build": "babel src -d dist",
-    "serve": "set NODE_ENV=production&& node src/main.js",
-    "start": "set NODE_ENV=development&& nodemon src/main.js --exec babel-node --presets es2015,stage-2",
-    "test": "set NODE_ENV=test&& mocha --compilers js:babel-register"
+    "start": "set NODE_ENV=localhost&& nodemon --promise=bluebird src/main.js --exec babel-node --presets es2015,stage-2",
+    "test": "set NODE_ENV=test&& mocha --compilers js:babel-register test/integration"
   },
   "author": "",
   "license": "ISC"
