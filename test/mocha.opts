@@ -1,2 +1,1 @@
 --timeout 600000
---require ./src/main

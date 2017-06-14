@@ -2,7 +2,7 @@ import express from 'express';
 
 import ValidationError from '../error/ValidationError';
 
-module.exports = ({workerController, authorizationCheck}) => {
+module.exports = ({workerController, authorizationCheck = () => ((req, res, next) => (next()))}) => {
     const workerRouter = express.Router();
     return workerRouter
         .get('/find/positions', authorizationCheck(), workerController.findByPositions)

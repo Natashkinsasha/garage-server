@@ -1,6 +1,6 @@
 import express from 'express';
 
-module.exports = ({equipmentController, authorizationCheck}) => {
+module.exports = ({equipmentController, authorizationCheck = () => ((req, res, next) => (next()))}) => {
     const equipmentRouter = express.Router();
     return equipmentRouter
         .get('/:id', authorizationCheck(), equipmentController.getById)

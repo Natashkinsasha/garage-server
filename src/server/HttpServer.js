@@ -3,17 +3,17 @@ import http from 'http';
 
 function HttpServer(app) {
 
-    this.server = http.createServer(app);
+    const server = http.createServer(app);
 
-    this.start = (port) => {
-        this.server.listen(port);
+    server.start = (port) => {
+        server.listen(port);
     };
 
-    this.finish = (cb) => {
-        this.server.close(cb);
+    server.finish = (cb) => {
+        server.close(cb);
     };
 
-    //return this.server;
+    return server;
 }
 
 export default HttpServer;

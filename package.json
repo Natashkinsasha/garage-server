@@ -43,7 +43,7 @@
   },
   "scripts": {
     "start": "set NODE_ENV=localhost&& nodemon --promise=bluebird src/main.js --exec babel-node --presets es2015,stage-2",
-    "test": "set NODE_ENV=test&& mocha --compilers js:babel-register test/integration"
+    "test": "set NODE_ENV=test&& mocha --compilers js:babel-register test/functional"
   },
   "author": "",
   "license": "ISC"

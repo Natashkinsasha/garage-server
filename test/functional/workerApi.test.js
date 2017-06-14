@@ -10,7 +10,18 @@ const expect = chai.expect;
 chai.use(chaiHttp);
 chai.use(dirtyChai);
 
+import {start, stop} from '../../src/assembly';
+
 describe('Test worker API', () => {
+
+    before((done)=>{
+        start().then(done).catch(done)
+    });
+
+    after((done)=>{
+        stop().then(done).catch(done)
+    });
+
 
     it('get worker by id', (done) => {
         chai
@@ -52,7 +63,6 @@ describe('Test worker API', () => {
                         expect(res).to.have.status(400);
                         done();
                     })
-                    .then(done)
             })
             .catch(done);
     });
@@ -90,7 +100,6 @@ describe('Test worker API', () => {
                 expect(err).to.have.status(400);
                 done();
             })
-            .then(done)
             .catch(done);
     });
 
@@ -130,7 +139,6 @@ describe('Test worker API', () => {
                 expect(err).to.have.status(400);
                 done();
             })
-            .then(done)
             .catch(done);
     });
 
@@ -220,7 +228,6 @@ describe('Test worker API', () => {
                 expect(res).to.have.status(400);
                 done();
             })
-            .then(done)
             .catch(done)
     });
 
@@ -232,7 +239,6 @@ describe('Test worker API', () => {
                 expect(res).to.have.status(400);
                 done();
             })
-            .then(done)
             .catch(done);
     });
 });
