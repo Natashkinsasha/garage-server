@@ -1,8 +1,9 @@
-import Promise from 'bluebird';
-import mongoose from 'mongoose'
+import realMongoose from './lib/mongoose';
+import fakeMongoose from './lib/fakeMongoose';
 import config from 'config';
 import HttpServer from './server/HttpServer';
 import UserRouter from './router/UserRouter';
+import BasicRouter from './router/BasicRouter';
 import WorkerRouter from './router/WorkerRouter';
 import EquipmentRouter from './router/EquipmentRouter';
 import WorkerController from './controller/WorkerController';
@@ -17,7 +18,6 @@ import Equipment from './model/Equipment';
 import App from './server/App';
 import passport from '../src/middleware/passport';
 import authorizationCheck from '../src/middleware/authorizationCheck';
-mongoose.Promise = Promise;
 const ENV = config.get('ENV');
 const url = `mongodb://${config.get('mongoDb.user')}:${config.get('mongoDb.password')}${config.get('mongoDb.host')}:${config.get('mongoDb.port')}/${config.get('mongoDb.db')}`;
 
@@ -31,41 +31,33 @@ const equipmentController = new EquipmentController(equipmentService);
 let userRouter;
 let workerRouter;
 let equipmentRouter;
+let mongoose;
 if (ENV === 'test') {
     userRouter = new UserRouter({userController});
     workerRouter = new WorkerRouter({workerController});
     equipmentRouter = new EquipmentRouter({equipmentController});
+    mongoose = fakeMongoose();
 } else {
     userRouter = new UserRouter({userController, authorizationCheck});
     workerRouter = new WorkerRouter({workerController, authorizationCheck});
     equipmentRouter = new EquipmentRouter({equipmentController, authorizationCheck});
+    mongoose = realMongoose();
 }
+const basicRouter = new BasicRouter({userRouter, workerRouter, equipmentRouter});
 
 const app = new App({
-    userRouter,
-    workerRouter,
-    equipmentRouter,
+    basicRouter,
     passport: passport({userService: new UserService(User)})
 });
 const http = new HttpServer(app);
 
+
 export function start() {
-    if (ENV === 'test') {
-        const Mockgoose = require('mockgoose').Mockgoose;
-        const mockgoose = new Mockgoose(mongoose);
-        return mockgoose
-            .prepareStorage()
-            .then(() => (mongoose.connect('mongodb://example.com/TestingDB')))
-            .then(() => {
-                http.start(config.get('server.port'))
-            });
-    } else {
-        return mongoose
-            .connect(url)
-            .then(() => (
-                http.start(config.get('server.port'))
-            ));
-    }
+    return mongoose
+        .connect(url)
+        .then(() => (
+            http.start(config.get('server.port'))
+        ));
 }
 
 export function stop() {

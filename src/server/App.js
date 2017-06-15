@@ -12,7 +12,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const objectID = require('mongodb').ObjectID;
 
 
-export default ({userRouter, workerRouter, equipmentRouter, passport}) => {
+export default ({basicRouter, passport}) => {
     const app = express();
     app.use(logger());
     app.use(cookieParser());
@@ -21,9 +21,7 @@ export default ({userRouter, workerRouter, equipmentRouter, passport}) => {
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(validator());
-    app.use(`/${config.get('version')}/api/workers`, workerRouter);
-    app.use(`/${config.get('version')}/api/equipments`, equipmentRouter);
-    app.use(`/${config.get('version')}/api`, userRouter);
+    app.use('/', basicRouter);
     app.use(errorHandler());
     return app;
 };

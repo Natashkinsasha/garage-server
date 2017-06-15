@@ -1,7 +1,7 @@
 import express from 'express';
 import passport from 'passport';
 
-module.exports = ({userController, authorizationCheck = () => ((req, res, next) => (next()))}) => {
+export default ({userController, authorizationCheck = () => ((req, res, next) => (next()))}) => {
     const userRouter = express.Router();
     return userRouter
         .post('/signup', userController.signup)

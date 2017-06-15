@@ -14,7 +14,7 @@ function WorkerServer(Worker) {
     };
 
     this.update = (worker) => {
-        return Worker.findByIdAndUpdate(worker.id, worker, {new: true}).lean().exec().then(change);
+        return Worker.findByIdAndUpdate(worker.id, worker, {new: true, runValidators: true}).lean().exec().then(change);
     };
 
     this.remove = (...ids) => {

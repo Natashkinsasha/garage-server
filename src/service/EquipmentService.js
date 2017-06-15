@@ -7,7 +7,7 @@ function EquipmentServer(Equipment) {
     };
 
     this.update = (equipment) => {
-        return Equipment.findByIdAndUpdate(equipment.id, equipment, {new: true});
+        return Equipment.findByIdAndUpdate(equipment.id, equipment, {new: true, runValidators: true });
     };
 
     this.remove = (...ids) => {
