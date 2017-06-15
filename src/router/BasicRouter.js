@@ -3,8 +3,8 @@ import config from 'config';
 
 export default ({userRouter, workerRouter, equipmentRouter, passport}) => {
     const basicRouter = express.Router();
-    basicRouter.use(`/${config.get('version')}/api/workers`, workerRouter);
-    basicRouter.use(`/${config.get('version')}/api/equipments`, equipmentRouter);
-    basicRouter.use(`/${config.get('version')}/api`, userRouter);
+    basicRouter.use(`/workers`, workerRouter);
+    basicRouter.use(`/equipments`, equipmentRouter);
+    basicRouter.use(`/`, userRouter);
     return basicRouter;
 };

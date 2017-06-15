@@ -21,7 +21,7 @@ export default ({basicRouter, passport}) => {
     app.use(passport.initialize());
     app.use(passport.session());
     app.use(validator());
-    app.use('/', basicRouter);
+    app.use(`/${config.get('version')}/api`, basicRouter);
     app.use(errorHandler());
     return app;
 };
