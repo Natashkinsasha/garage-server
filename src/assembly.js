@@ -1,14 +1,16 @@
+import config from 'config';
 import realMongoose from './lib/mongoose';
 import fakeMongoose from './lib/fakeMongoose';
-import config from 'config';
+import mockRedisClient from './lib/MockRedisClient';
+import realRedisClient from './lib/RedisClient';
 import HttpServer from './server/HttpServer';
-import UserRouter from './router/UserRouter';
+import AuthRouter from './router/AuthRouter';
 import BasicRouter from './router/BasicRouter';
 import WorkerRouter from './router/WorkerRouter';
 import EquipmentRouter from './router/EquipmentRouter';
 import WorkerController from './controller/WorkerController';
 import EquipmentController from './controller/WorkerController';
-import UserController from './controller/UserController';
+import UserController from './controller/AuthController';
 import WorkerService from './service/WorkerService';
 import EquipmentService from './service/WorkerService';
 import UserService from './service/UserService';
@@ -28,22 +30,41 @@ const equipmentService = new EquipmentService(Equipment);
 const userController = new UserController(userService);
 const workerController = new WorkerController(workerService);
 const equipmentController = new EquipmentController(equipmentService);
-let userRouter;
+let authRouter;
 let workerRouter;
 let equipmentRouter;
 let mongoose;
-if (ENV === 'test') {
-    userRouter = new UserRouter({userController});
-    workerRouter = new WorkerRouter({workerController});
-    equipmentRouter = new EquipmentRouter({equipmentController});
-    mongoose = fakeMongoose();
-} else {
-    userRouter = new UserRouter({userController, authorizationCheck});
-    workerRouter = new WorkerRouter({workerController, authorizationCheck});
-    equipmentRouter = new EquipmentRouter({equipmentController, authorizationCheck});
-    mongoose = realMongoose();
+let redisClient;
+
+switch(ENV) {
+    case 'test': {
+        authRouter = new AuthRouter({userController, passport});
+        workerRouter = new WorkerRouter({workerController});
+        equipmentRouter = new EquipmentRouter({equipmentController});
+        mongoose = fakeMongoose();
+        redisClient = mockRedisClient();
+        break;
+    }
+    case 'localhost': {
+        authRouter = new AuthRouter({userController, passport, authorizationCheck});
+        workerRouter = new WorkerRouter({workerController, authorizationCheck});
+        equipmentRouter = new EquipmentRouter({equipmentController, authorizationCheck});
+        mongoose = fakeMongoose();
+        redisClient = mockRedisClient();
+        break;
+    }
+    default: {
+        authRouter = new AuthRouter({userController, passport, authorizationCheck});
+        workerRouter = new WorkerRouter({workerController, authorizationCheck});
+        equipmentRouter = new EquipmentRouter({equipmentController, authorizationCheck});
+        mongoose = realMongoose();
+        redisClient = realRedisClient();
+        break;
+    }
 }
-const basicRouter = new BasicRouter({userRouter, workerRouter, equipmentRouter});
+
+
+const basicRouter = new BasicRouter({authRouter, workerRouter, equipmentRouter});
 
 const app = new App({
     basicRouter,

@@ -23,5 +23,10 @@
       "maxAge": null,
       "path": "/"
     }
-  }
+  },
+  "jwt":{
+    "secret":"garage"
+  },
+  "FACEBOOK_APP_ID":"456203928064750",
+  "FACEBOOK_APP_SECRET":"74727a95a18162c22ba05877b6a36c1f"
 }

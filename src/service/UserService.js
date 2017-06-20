@@ -14,6 +14,9 @@ function UserService(User) {
         return new User({username, password}).save().then((worker) => (worker.toObject())).then(change);
     };
 
+    this.findOrCreate = ({}) => {
+
+    };
 }
 
 export default UserService;

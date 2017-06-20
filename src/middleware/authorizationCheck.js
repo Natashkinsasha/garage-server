@@ -1,4 +1,5 @@
 import R from 'ramda';
+import jwt from 'jsonwebtoken';
 
 import AuthorizationError from '../error/AuthorizationError';
 
