@@ -7,5 +7,5 @@ mongoose.Promise = Promise;
 mockgoose
     .prepareStorage();
 
-export default ()=>(mongoose)
+module.exports = ()=>(mongoose);
 

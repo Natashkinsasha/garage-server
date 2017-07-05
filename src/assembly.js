@@ -1,24 +1,23 @@
 import config from 'config';
-import realMongoose from './lib/mongoose';
-import fakeMongoose from './lib/fakeMongoose';
-import mockRedisClient from './lib/MockRedisClient';
-import realRedisClient from './lib/RedisClient';
 import HttpServer from './server/HttpServer';
 import AuthRouter from './router/AuthRouter';
 import BasicRouter from './router/BasicRouter';
 import WorkerRouter from './router/WorkerRouter';
 import EquipmentRouter from './router/EquipmentRouter';
 import WorkerController from './controller/WorkerController';
+import AuthController from './controller/AuthController';
 import EquipmentController from './controller/WorkerController';
 import UserController from './controller/AuthController';
 import WorkerService from './service/WorkerService';
 import EquipmentService from './service/WorkerService';
+import JWTService from './service/JWTService';
+
 import UserService from './service/UserService';
 import Worker from './model/Worker';
 import User from './model/User';
 import Equipment from './model/Equipment';
 import App from './server/App';
-import passport from '../src/middleware/passport';
+import Passport from '../src/middleware/passport';
 import authorizationCheck from '../src/middleware/authorizationCheck';
 const ENV = config.get('ENV');
 const url = `mongodb://${config.get('mongoDb.user')}:${config.get('mongoDb.password')}${config.get('mongoDb.host')}:${config.get('mongoDb.port')}/${config.get('mongoDb.db')}`;
@@ -30,35 +29,51 @@ const equipmentService = new EquipmentService(Equipment);
 const userController = new UserController(userService);
 const workerController = new WorkerController(workerService);
 const equipmentController = new EquipmentController(equipmentService);
+const authController = new AuthController(userService);
+
+let passport;
 let authRouter;
 let workerRouter;
 let equipmentRouter;
 let mongoose;
 let redisClient;
+let jwtService;
 
-switch(ENV) {
+switch (ENV) {
     case 'test': {
-        authRouter = new AuthRouter({userController, passport});
-        workerRouter = new WorkerRouter({workerController});
-        equipmentRouter = new EquipmentRouter({equipmentController});
+        const mockRedisClient = require('./lib/MockRedisClient');
+        const fakeMongoose = require('./lib/fakeMongoose');
         mongoose = fakeMongoose();
         redisClient = mockRedisClient();
+        jwtService = new JWTService({redisClient});
+        passport = new Passport({userService, jwtService});
+        authRouter = new AuthRouter({authController, passport});
+        workerRouter = new WorkerRouter({workerController});
+        equipmentRouter = new EquipmentRouter({equipmentController});
         break;
     }
     case 'localhost': {
-        authRouter = new AuthRouter({userController, passport, authorizationCheck});
-        workerRouter = new WorkerRouter({workerController, authorizationCheck});
-        equipmentRouter = new EquipmentRouter({equipmentController, authorizationCheck});
+        const mockRedisClient = require('./lib/MockRedisClient');
+        const fakeMongoose = require('./lib/fakeMongoose');
         mongoose = fakeMongoose();
         redisClient = mockRedisClient();
+        jwtService = new JWTService({redisClient});
+        passport = new Passport({userService, jwtService});
+        authRouter = new AuthRouter({authController, passport, authorizationCheck});
+        workerRouter = new WorkerRouter({workerController, authorizationCheck});
+        equipmentRouter = new EquipmentRouter({equipmentController, authorizationCheck});
         break;
     }
     default: {
-        authRouter = new AuthRouter({userController, passport, authorizationCheck});
-        workerRouter = new WorkerRouter({workerController, authorizationCheck});
-        equipmentRouter = new EquipmentRouter({equipmentController, authorizationCheck});
+        const realRedisClient = require('./lib/RedisClient');
+        const realMongoose = require('./lib/mongoose');
         mongoose = realMongoose();
         redisClient = realRedisClient();
+        jwtService = new JWTService({redisClient});
+        passport = new Passport({userService, jwtService});
+        authRouter = new AuthRouter({authController, passport, authorizationCheck});
+        workerRouter = new WorkerRouter({workerController, authorizationCheck});
+        equipmentRouter = new EquipmentRouter({equipmentController, authorizationCheck});
         break;
     }
 }
@@ -68,7 +83,7 @@ const basicRouter = new BasicRouter({authRouter, workerRouter, equipmentRouter})
 
 const app = new App({
     basicRouter,
-    passport: passport({userService: new UserService(User)})
+    passport,
 });
 const http = new HttpServer(app);
 

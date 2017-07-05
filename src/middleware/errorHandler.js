@@ -13,10 +13,10 @@ module.exports = () => (err, req, res, next) => {
             return res.status(400).json(err.result.mapped())
         })
         .catch(AuthorizationError, (err) => {
-            return res.status(401).end();
+            return res.status(401).json(err);
         })
         .catch(AuthenticationError, (err) => {
-            return res.status(401).end();
+            return res.status(401).json(err);
         })
         .catch((err) => {
             logger.error(err);

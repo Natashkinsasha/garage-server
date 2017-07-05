@@ -20,8 +20,8 @@ export default ({basicRouter, passport}) => {
     app.use(bodyParser.json());
     app.use(passport.initialize());
     //для session
-    //app.use(passport.session());
-    app.use(passport.authenticate('jwt'));
+    app.use(passport.session());
+    //app.use(passport.authenticate('jwt'));
     app.use(validator());
     app.use(`/${config.get('version')}/api`, basicRouter);
     app.use(errorHandler());

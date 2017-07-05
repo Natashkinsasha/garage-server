@@ -1,4 +1,3 @@
-import config from 'config';
 import Promise from 'bluebird';
 import R from 'ramda'
 import mongoose from 'mongoose';
@@ -17,18 +16,14 @@ chai.use(dirtyChai);
 mongoose.Promise = Promise;
 
 describe('WorkerService', () => {
-    let workerService;
-    let mockgoose;
+    const workerService = new WorkerService(Worker);
+    const mockgoose = new Mockgoose(mongoose);
 
     before((done) => {
-        mockgoose = new Mockgoose(mongoose);
         mockgoose
             .prepareStorage()
             .then(() => (mongoose.connect('mongodb://example.com/TestingDB')))
-            .then(() => {
-                workerService = new WorkerService(Worker);
-                done();
-            })
+            .then(() => (done()))
             .catch(done);
     });
 

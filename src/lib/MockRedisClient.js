@@ -1,2 +1,2 @@
 const RedisMock = require('ioredis-mock').default;
-export default () => new RedisMock();
+module.exports = () => new RedisMock();

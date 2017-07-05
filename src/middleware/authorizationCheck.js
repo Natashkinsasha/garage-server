@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 import AuthorizationError from '../error/AuthorizationError';
 
-module.exports = (...roles) => {
+export default (...roles) => {
     return (req, res, next)=>{
         if (req.isAuthenticated()){
             if(R.isEmpty(roles)){

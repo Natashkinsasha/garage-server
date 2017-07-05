@@ -13,14 +13,11 @@ const secret = config.get('jwt.secret');
 
 
 function passportAuthenticate({userService, JWTService}) {
-    passport.use({session: false}, new LocalStrategy((username, password, done) => {
+    passport.use({session: true}, new LocalStrategy((username, password, done) => {
             return userService
                 .findByUsername(username)
                 .then((user) => {
-                    if (!user) {
-                        return done(new AuthenticationError());
-                    }
-                    if (checkPassword(password, user.passwordHash, user.salt)) {
+                    if (!user && !checkPassword(password, user.passwordHash, user.salt)) {
                         return done(new AuthenticationError());
                     }
                     return done(null, {username: user.username, roles: user.roles});
@@ -34,12 +31,12 @@ function passportAuthenticate({userService, JWTService}) {
         secretOrKey: secret,
     };
 
-    passport.use({session: false}, new JwtStrategy(opts, (payload, done) => {
+    passport.use(new JwtStrategy(opts, (payload, done) => {
         return JWTService
-            .isActual(payload.data.tokenId)
+            .isActualAccessToken(payload.tokenId)
             .then((isActual) => {
                 if (isActual) {
-                    done(null, payload.data);
+                    done(null, payload);
                 }
                 done(new BrokenTokenError());
             })

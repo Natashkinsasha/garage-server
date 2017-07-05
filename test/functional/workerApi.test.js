@@ -37,6 +37,7 @@ describe('Test worker API', () => {
                 expect(res).to.have.status(200);
                 done();
             })
+            .catch(console.log)
             .catch(err => (done(err)));
     });
 
