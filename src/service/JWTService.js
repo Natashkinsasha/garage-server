@@ -5,10 +5,10 @@ import Promise from 'bluebird';
 function JWTService({ redisClient, secret: globalSecret }) {
 
 
-    this.createToken = ({ data = {}, type = 'ACCESS', iss = 'garage' }, secret) => {
+    this.createToken = ({ data = {}, type = 'ACCESS', iss = 'garage', ...claims }, secret) => {
         const id = data.id || ``;
         const jti = `${shortId.generate()}-${id}`;
-        return Promise.promisify(jwt.sign)({ data, jti, type, iss }, secret || globalSecret)
+        return Promise.promisify(jwt.sign)({ data, jti, type, iss, ...claims  }, secret || globalSecret)
             .then((token) => Promise.promisify(jwt.verify)(token, secret)
                 .then((decoded) => (redisClient.hmset(`${jti}:${type}:${iss}`, 'jti', jti, 'type', type, 'iss', iss, 'iat', decoded.iat, 'data', JSON.stringify(data)))
                     .return(token)
