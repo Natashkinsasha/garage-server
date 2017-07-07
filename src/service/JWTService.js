@@ -37,15 +37,25 @@ function JWTService({ redisClient, secret: globalSecret }) {
             .then(isActual);
     };
 
-    // this.isActualAccessToken = ({ jti, iss }) => {
-    //     return getPayload(payloadOrToken, secret)
-    //         .then(({ jti, iss, type: 'ACCESS' })=>(isActual()));
-    //     return this.isActual({ jti, iss, type: 'ACCESS' });
-    // };
-    //
-    // this.isActualRefreshToken = ({ jti, iss = `*` }) => {
-    //     return this.isActual({ jti, iss, type: 'REFRESH' });
-    // };
+    this.isActualAccessToken = (payloadOrToken, secret) => {
+        return getPayload(payloadOrToken, secret)
+            .then(({ jti, iss, type })=>{
+                if(type!=='ACCESS'){
+                    return false;
+                }
+                return isActual({ jti, iss, type });
+            })
+    };
+
+    this.isActualRefreshToken = (payloadOrToken, secret) => {
+        return getPayload(payloadOrToken, secret)
+            .then(({ jti, iss, type })=>{
+                if(type!=='REFRESH'){
+                    return false;
+                }
+                return isActual({ jti, iss, type });
+            })
+    };
 
     function getPayload(payloadOrToken, secret) {
         return Promise
